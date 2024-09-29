@@ -23,8 +23,6 @@ jobs:
     steps:
       - name: Checkout master branch
         uses: actions/checkout@v3
-        with:
-          repository: 'dev'
 
       - name: Install winlibs
         uses: bwoodsend/setup-winlibs-action@v1
