@@ -169,7 +169,7 @@ func (m *songSelectPopup) drawSongSelect() {
 		imgui.TableNextColumn()
 
 		imgui.AlignTextToFramePadding()
-		imgui.Text("Sort by:")
+		imgui.TextUnformatted("Sort by:")
 
 		imgui.SameLine()
 
@@ -306,7 +306,7 @@ func (m *songSelectPopup) drawSongSelect() {
 
 				imgui.PushTextWrapPos()
 
-				imgui.Text(b.bMaps[0].Name)
+				imgui.TextUnformatted(b.bMaps[0].Name)
 
 				imgui.PopTextWrapPos()
 
@@ -325,7 +325,7 @@ func (m *songSelectPopup) drawSongSelect() {
 					s := b.bMaps[0].SetID == 0
 
 					if s {
-						imgui.PushItemFlag(imgui.ItemFlags(imgui.ItemFlagsDisabled), true)
+						imgui.BeginDisabled()
 					}
 
 					ImIO.SetFontGlobalScale(16.0 / 32)
@@ -336,6 +336,10 @@ func (m *songSelectPopup) drawSongSelect() {
 						platform.OpenURL(fmt.Sprintf("https://osu.ppy.sh/s/%d", b.bMaps[0].SetID))
 					}
 
+					if s {
+						imgui.EndDisabled()
+					}
+
 					ImIO.SetFontGlobalScale(1)
 					imgui.PopFont()
 
@@ -343,16 +347,12 @@ func (m *songSelectPopup) drawSongSelect() {
 						imgui.BeginTooltip()
 
 						if s {
-							imgui.Text("Not available")
+							imgui.TextUnformatted("Not available")
 						} else {
-							imgui.Text(fmt.Sprintf("https://osu.ppy.sh/s/%d", b.bMaps[0].SetID))
+							imgui.TextUnformatted(fmt.Sprintf("https://osu.ppy.sh/s/%d", b.bMaps[0].SetID))
 						}
 
 						imgui.EndTooltip()
-					}
-
-					if s {
-						imgui.PopItemFlag()
 					}
 
 					imgui.SameLine()
@@ -381,9 +381,9 @@ func (m *songSelectPopup) drawSongSelect() {
 						imgui.BeginTooltip()
 
 						if isPreviewed {
-							imgui.Text("Stop preview")
+							imgui.TextUnformatted("Stop preview")
 						} else {
-							imgui.Text("Play preview")
+							imgui.TextUnformatted("Play preview")
 						}
 
 						imgui.EndTooltip()
@@ -400,7 +400,7 @@ func (m *songSelectPopup) drawSongSelect() {
 				imgui.EndTable()
 			}
 
-			imgui.Text(fmt.Sprintf("%s // %s", b.bMaps[0].Artist, b.bMaps[0].Creator))
+			imgui.TextUnformatted(fmt.Sprintf("%s // %s", b.bMaps[0].Artist, b.bMaps[0].Creator))
 
 			imgui.PushFont(Font20)
 
@@ -608,7 +608,10 @@ func (m *songSelectPopup) stopPreview() {
 func (m *songSelectPopup) startPreview(bMap *beatmap.BeatMap) {
 	cT := qpc.GetMilliTimeF()
 
-	track := bass.NewTrack(filepath.Join(settings.General.OsuSongsDir, bMap.Dir, bMap.Audio))
+	var track *bass.TrackBass
+	if fPath, err2 := bMap.GetAudioFile(); err2 == nil {
+		track = bass.NewTrack(fPath)
+	}
 
 	if track != nil {
 		beatmap.ParseTimingPointsAndPauses(bMap)

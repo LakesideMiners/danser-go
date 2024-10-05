@@ -54,12 +54,11 @@ func (m *modPopup) drawModMenu() {
 			m.modCheckbox(difficulty.Relax2, difficulty.Relax|difficulty.SpunOut|nfSD)
 
 			m.modCheckbox(difficulty.SpunOut, difficulty.Relax2)
-
-			m.modCheckbox(difficulty.ScoreV2, difficulty.None)
 		})
 
 		m.drawRow("Conversion:", func() {
-			m.modCheckbox(difficulty.Lazer, difficulty.None)
+			m.modCheckbox(difficulty.ScoreV2, difficulty.Lazer)
+			m.modCheckbox(difficulty.Lazer, difficulty.ScoreV2)
 		})
 
 		imgui.EndTable()
@@ -90,7 +89,7 @@ func (m *modPopup) drawRow(name string, work func()) {
 
 	imgui.AlignTextToFramePadding()
 
-	imgui.Text(name)
+	imgui.TextUnformatted(name)
 }
 
 func (m *modPopup) modCheckbox(mod, incompat difficulty.Modifier) (ret bool) {
