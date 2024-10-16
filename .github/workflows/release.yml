@@ -46,45 +46,7 @@ jobs:
         id: build
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        if: ${{ !failure() && steps.build.conclusion != 'failure' }}
-        with:
-          name: danser
-          path: dist/artifacts/*
-
-  build_linux:
-    name: Building linux version
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout master branch
-        uses: actions/checkout@v3
-
-      - name: Install needed packages
-        run: |
-          sudo apt-get update
-          sudo apt-get install xorg-dev libgl1-mesa-dev libgtk-3-dev
-
-      - name: Install golang
-        uses: actions/setup-go@v3
-        with:
-          go-version: '1.21.0'
-          cache: true
-
-      - name: Build danser
-        run: |
-          version="${{ github.event.inputs.version }}"
-          
-          chmod +x dist-linux.sh
-          ./dist-linux.sh $version
-          
-          if [ ! -f "dist/artifacts/danser-${version// /-s}-linux.zip" ]; then
-            echo "Danser failed to build"
-            exit 1
-          fi
-        id: build
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.4.3
         if: ${{ !failure() && steps.build.conclusion != 'failure' }}
         with:
           name: danser
@@ -92,8 +54,8 @@ jobs:
 
   publish_release:
     name: Publish draft release
-    if: ${{ !cancelled() && needs.build_windows.result == 'success' && needs.build_linux.result == 'success' && github.event.inputs.draft }}
-    needs: [build_windows, build_linux]
+    if: ${{ !cancelled() && needs.build_windows.result == 'success' && github.event.inputs.draft }}
+    needs: [build_windows]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
